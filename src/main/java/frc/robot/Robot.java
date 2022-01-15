@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 //import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 // THIS IS THE CONTROLLER IMPORT (It is important and took us a while to find)
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.Timer;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 
@@ -28,13 +29,17 @@ public class Robot extends TimedRobot {
   private Joystick m_rightStick;
   private JoystickButton Lbutton1;
   private JoystickButton Lbutton2;
-  /*private JoystickButton Lbutton3;
-  private JoystickButton Lbutton4;
+  private JoystickButton Lbutton3;
+  /*private JoystickButton Lbutton4;
   private JoystickButton Lbutton5;
   private JoystickButton Lbutton6;
   private JoystickButton Lbutton7;
   private JoystickButton Lbutton8;*/
   
+  
+  boolean toggleOn = false;
+  boolean togglePressed = false;
+  boolean toggleHeld = false;
 
   private VictorSP m_left = new VictorSP(6);
   private VictorSP m_right = new VictorSP(2);
@@ -42,6 +47,7 @@ public class Robot extends TimedRobot {
   private final Timer m_timer = new Timer();
 
   private DoubleSolenoid Arm;
+  
 
 
 
@@ -57,10 +63,10 @@ public class Robot extends TimedRobot {
 
 
      //These are the left joystick buttons
-      Lbutton1 = new JoystickButton(m_leftStick, 1);
+      Lbutton1 = new JoystickButton(m_leftStick, 0);
       Lbutton2 = new JoystickButton(m_leftStick, 2);
-      /*Lbutton3 = new JoystickButton(m_leftStick, 3);
-      Lbutton4 = new JoystickButton(m_leftStick, 4);
+      Lbutton3 = new JoystickButton(m_leftStick, 3);
+      /*Lbutton4 = new JoystickButton(m_leftStick, 4);
       Lbutton5 = new JoystickButton(m_leftStick, 5);
       Lbutton6 = new JoystickButton(m_leftStick, 6);
       Lbutton7 = new JoystickButton(m_leftStick, 7);
@@ -72,6 +78,9 @@ public class Robot extends TimedRobot {
     m_right.setInverted(true);
 
     Arm = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+
+    // Initialize Camera Server
+    CameraServer.startAutomaticCapture();
   }
 
 /* This function is run once each time the robot enters autonomous mode. This function is also imporant
@@ -106,21 +115,47 @@ public void autonomousPeriodic() {
   //This is the teleoperated mode that you select from the RoboRio control panel (I forgot what is was called)
   @Override
   public void teleopPeriodic() {
+    
     m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
     
-    Boolean ArmButtonPressed = m_leftStick.getRawButton(1);
+    updateToggle();
+
+    if(toggleOn){
+      Arm.set(kForward);
+    }else{
+      Arm.set(kReverse);
+    }
+    }
+
+  public void updateToggle()
+  {
+      if(m_leftStick.getRawButton(1)){
+          if(!toggleHeld){
+              toggleOn = !toggleOn;
+              toggleHeld = true;
+          }
+      }else{
+          toggleHeld = false;  
+
+      
+          
+
+
+    /*Boolean ArmButtonPressed = m_leftStick.getRawButton(1);
     if (ArmButtonPressed) {
       Arm.set(kForward);
-    }
+    }*/
 
     Boolean ArmButtonReleased = m_leftStick.getRawButton(2);
     if (ArmButtonReleased) {
       Arm.set(kReverse);
     }
 
-    //Lbutton1.whenPressed(() -> Arm.set(kForward));
+    //Lbutton1.whenPressed(Arm.toggle());
     
     //Lbutton2.whenPressed(() -> Arm.set(kReverse));
 
   }
-}
+
+  
+}}
