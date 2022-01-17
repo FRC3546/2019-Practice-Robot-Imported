@@ -12,13 +12,15 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.Timer;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
  /* This is a demo program showing the use of the RobotDrive class, specifically it contains the code
   necessary to operate a robot with tank drive. */
@@ -48,6 +50,8 @@ public class Robot extends TimedRobot {
 
   private DoubleSolenoid Arm;
   
+  private SendableChooser<Command> m_chooser = new SendableChooser<>();
+
 
 
 
@@ -60,6 +64,14 @@ public class Robot extends TimedRobot {
     joystick to ensure that we are not driving the wrong way*/
     m_leftStick = new Joystick(1);
     m_rightStick = new Joystick(0);
+
+    
+
+
+
+    m_chooser.setDefaultOption(kAutoDefault, kAutoDefault);
+    m_chooser.addOption(kForwardTurnReverse, kForwardTurnReverse);
+    SmartDashboard.putData("Auto modes", m_chooser);
 
 
      //These are the left joystick buttons
@@ -88,6 +100,7 @@ because it resets the timer to 0 and then starts the timer at the begining of th
 so our robot knows to only drive for 2 seconds */
 @Override
 public void autonomousInit() {
+  m_autoSelected = m_chooser.getSelected();
   m_timer.reset();
   m_timer.start();
 }
@@ -95,6 +108,16 @@ public void autonomousInit() {
   /** This function is called periodically during autonomous. */
 @Override
 public void autonomousPeriodic() {
+  if (m_autoSelected == kAutoDefault) {
+    //does nothing
+  }else {
+    //kForwardTurnReverse
+  
+
+
+
+  
+  
   // Drive for 2 seconds
   if (m_timer.get() < 2.0) {
     m_myRobot.tankDrive(-0.5, -0.5); // drives backwards at half speed (We need to figure out how to invert)
@@ -110,7 +133,7 @@ public void autonomousPeriodic() {
   else {
     m_myRobot.stopMotor(); // stops the robot
   }  
-}
+}}
 
   //This is the teleoperated mode that you select from the RoboRio control panel (I forgot what is was called)
   @Override
@@ -135,7 +158,8 @@ public void autonomousPeriodic() {
               toggleHeld = true;
           }
       }else{
-          toggleHeld = false;  
+          toggleHeld = false;
+          toggleOn = false;  
 
       
           
