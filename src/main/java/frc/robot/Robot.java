@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
   
   
   boolean toggleOn = false;
-  boolean togglePressed = false;
+  //boolean togglePressed = false;
   boolean toggleHeld = false;
 
   private VictorSP m_left = new VictorSP(6);
@@ -69,8 +69,8 @@ public class Robot extends TimedRobot {
 
 
 
-    m_chooser.setDefaultOption(kAutoDefault, kAutoDefault);
-    m_chooser.addOption(kForwardTurnReverse, kForwardTurnReverse);
+    //m_chooser.setDefaultOption(kAutoDefault, kAutoDefault);
+    //m_chooser.addOption(kForwardTurnReverse, kForwardTurnReverse);
     SmartDashboard.putData("Auto modes", m_chooser);
 
 
@@ -100,7 +100,18 @@ because it resets the timer to 0 and then starts the timer at the begining of th
 so our robot knows to only drive for 2 seconds */
 @Override
 public void autonomousInit() {
-  m_autoSelected = m_chooser.getSelected();
+
+  m_chooser.setDefaultOption("Simple Auto", m_simpleAuto);
+  m_chooser.addOption("Complex Auto", m_complexAuto);
+ 
+  final Command m_simpleAuto =
+    new DriveDistance(
+      
+    );
+
+  SmartDashboard.putData(m_chooser);
+
+
   m_timer.reset();
   m_timer.start();
 }
@@ -108,10 +119,7 @@ public void autonomousInit() {
   /** This function is called periodically during autonomous. */
 @Override
 public void autonomousPeriodic() {
-  if (m_autoSelected == kAutoDefault) {
-    //does nothing
-  }else {
-    //kForwardTurnReverse
+  
   
 
 
@@ -119,9 +127,7 @@ public void autonomousPeriodic() {
   
   
   // Drive for 2 seconds
-  if (m_timer.get() < 2.0) {
-    m_myRobot.tankDrive(-0.5, -0.5); // drives backwards at half speed (We need to figure out how to invert)
-  } 
+  
   else if (m_timer.get() < 3.25)
   {
     m_myRobot.tankDrive(0.7, -0.7);
@@ -133,7 +139,7 @@ public void autonomousPeriodic() {
   else {
     m_myRobot.stopMotor(); // stops the robot
   }  
-}}
+}
 
   //This is the teleoperated mode that you select from the RoboRio control panel (I forgot what is was called)
   @Override
@@ -141,9 +147,17 @@ public void autonomousPeriodic() {
     
     m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
     
+
+    Boolean ArmButtonPressed = m_leftStick.getRawButton(3);
+    if (ArmButtonPressed) {
+      toggleHeld = true;
+    }
+
+
+    
     updateToggle();
 
-    if(toggleOn){
+    if (toggleOn){
       Arm.set(kForward);
     }else{
       Arm.set(kReverse);
@@ -159,21 +173,34 @@ public void autonomousPeriodic() {
           }
       }else{
           toggleHeld = false;
-          toggleOn = false;  
-
-      
+          toggleOn = false;}
+/*  
+    
+  if(toggleOn){
+    Arm.set(kForward);
+  }else{
+    Arm.set(kReverse);}
+    }
           
+    
+  
+  public void updateToggle2()
+  {
+      if(m_leftStick.getRawButton(2)){
+        if(!toggleHeld){
+            toggleOn = !toggleOn;
+            toggleHeld = true;
+        }
+      }else{
+          toggleHeld = false;
+      
+*/
+    
 
-
-    /*Boolean ArmButtonPressed = m_leftStick.getRawButton(1);
-    if (ArmButtonPressed) {
-      Arm.set(kForward);
-    }*/
-
-    Boolean ArmButtonReleased = m_leftStick.getRawButton(2);
+    /*Boolean ArmButtonReleased = m_leftStick.getRawButton(2);
     if (ArmButtonReleased) {
       Arm.set(kReverse);
-    }
+    }*/
 
     //Lbutton1.whenPressed(Arm.toggle());
     
@@ -182,4 +209,4 @@ public void autonomousPeriodic() {
   }
 
   
-}}
+}//}
