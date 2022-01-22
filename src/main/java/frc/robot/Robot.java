@@ -39,9 +39,10 @@ public class Robot extends TimedRobot {
   private JoystickButton Lbutton8;*/
   
   
-  boolean toggleOn = false;
-  //boolean togglePressed = false;
-  boolean toggleHeld = false;
+  boolean toggleOnSolenoid = false;
+  boolean toggleHeldSolenoid = false;
+
+  boolean isInverted = false; //From starting posistion
 
   private VictorSP m_left = new VictorSP(6);
   private VictorSP m_right = new VictorSP(2);
@@ -146,29 +147,56 @@ public void autonomousPeriodic() {
       break;
   }
 
+  
+  }
 
   
   
   
-}
+
+
+public void updateInversionValue()
+  {
+    if(m_leftStick.getRawButton(3))
+    {
+      isInverted = true;
+    }
+    if(m_leftStick.getRawButton(4))
+    {
+      isInverted = false;
+    }
+  }
+
 
   //This is the teleoperated mode that you select from the RoboRio control panel (I forgot what is was called)
   @Override
   public void teleopPeriodic() {
     
-    m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+    updateInversionValue();
+
+
+    if (!isInverted)
+    {
+      m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+    }
+    else{
+      m_myRobot.tankDrive((-1) * m_rightStick.getY(), (-1) * m_leftStick.getY());
+    }
+
+
+    // m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
     
 
-    Boolean ArmButtonPressed = m_leftStick.getRawButton(3);
-    if (ArmButtonPressed) {
-      toggleHeld = true;
-    }
+    // Boolean ArmButtonPressed = m_leftStick.getRawButton(3);
+    // if (ArmButtonPressed) {
+    //   toggleHeldSolenoid = true;
+    // }
 
 
     
     updateToggle();
 
-    if (toggleOn){
+    if (toggleOnSolenoid){
       Arm.set(kForward);
     }else{
       Arm.set(kReverse);
@@ -178,13 +206,13 @@ public void autonomousPeriodic() {
   public void updateToggle()
   {
       if(m_leftStick.getRawButton(1)){
-          if(!toggleHeld){
-              toggleOn = !toggleOn;
-              toggleHeld = true;
+          if(!toggleHeldSolenoid){
+              toggleOnSolenoid = !toggleOnSolenoid;
+              toggleHeldSolenoid = true;
           }
       }else{
-          toggleHeld = false;
-          toggleOn = false;}
+          toggleHeldSolenoid = false;
+          toggleOnSolenoid = false;}
 /*  
     
   if(toggleOn){
