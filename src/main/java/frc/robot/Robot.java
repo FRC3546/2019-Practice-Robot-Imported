@@ -10,6 +10,12 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 // THIS IS THE CONTROLLER IMPORT (It is important and took us a while to find)
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
+
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.SPI;
+
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -20,7 +26,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj.shuffleboard.*;
 
  /* This is a demo program showing the use of the RobotDrive class, specifically it contains the code
   necessary to operate a robot with tank drive. */
@@ -56,6 +62,7 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  AHRS gyro = new AHRS(SPI.Port.kMXP);
 
   @Override
   public void robotInit() {
@@ -75,7 +82,8 @@ public class Robot extends TimedRobot {
     
  
 
-  
+    Shuffleboard.getTab("Example tab").add(gyro);
+
 
      //These are the left joystick buttons
       Lbutton1 = new JoystickButton(m_leftStick, 0);
