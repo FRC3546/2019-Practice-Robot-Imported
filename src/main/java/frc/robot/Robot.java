@@ -50,8 +50,6 @@ public class Robot extends TimedRobot {
 
   private DoubleSolenoid Arm;
   
-  private SendableChooser<Command> m_chooser = new SendableChooser<>();
-
 
 
 
@@ -66,12 +64,27 @@ public class Robot extends TimedRobot {
     m_rightStick = new Joystick(0);
 
     
+    
 
 
-
-    //m_chooser.setDefaultOption(kAutoDefault, kAutoDefault);
-    //m_chooser.addOption(kForwardTurnReverse, kForwardTurnReverse);
-    SmartDashboard.putData("Auto modes", m_chooser);
+    final Command m_simpleAuto; {
+      m_myRobot.tankDrive(-0.5, -0.5);
+    };
+  
+  
+    final Command m_complexAuto; {
+      m_myRobot.tankDrive(-0.5, -0.5);
+    };
+  
+  
+  
+    
+    m_chooser.setDefaultOption("Simple Auto", m_simpleAuto);
+    m_chooser.addOption("Complex Auto", m_complexAuto);
+   
+   
+  
+    SmartDashboard.putData(m_chooser);
 
 
      //These are the left joystick buttons
@@ -95,21 +108,17 @@ public class Robot extends TimedRobot {
     CameraServer.startAutomaticCapture();
   }
 
+
+
+
+
 /* This function is run once each time the robot enters autonomous mode. This function is also imporant
 because it resets the timer to 0 and then starts the timer at the begining of the autonomous period
 so our robot knows to only drive for 2 seconds */
 @Override
 public void autonomousInit() {
 
-  m_chooser.setDefaultOption("Simple Auto", m_simpleAuto);
-  m_chooser.addOption("Complex Auto", m_complexAuto);
- 
-  final Command m_simpleAuto =
-    new DriveDistance(
-      
-    );
 
-  SmartDashboard.putData(m_chooser);
 
 
   m_timer.reset();
@@ -127,6 +136,10 @@ public void autonomousPeriodic() {
   
   
   // Drive for 2 seconds
+  if (m_timer.get() < 2)
+  {
+    m_myRobot.tankDrive(-0.5, -0.5);
+  }
   
   else if (m_timer.get() < 3.25)
   {
