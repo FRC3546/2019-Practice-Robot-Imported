@@ -225,6 +225,14 @@ public void updateInversionValue()
     }else{
       Arm.set(kReverse);
     }
+
+
+    if (m_rightStick.getRawButton(3))
+    {
+      gyro.zeroYaw();
+    }
+
+
     }
 
   public void updateToggle()
