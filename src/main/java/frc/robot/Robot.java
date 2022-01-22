@@ -21,6 +21,8 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.*;
+
 
  /* This is a demo program showing the use of the RobotDrive class, specifically it contains the code
   necessary to operate a robot with tank drive. */
@@ -50,7 +52,10 @@ public class Robot extends TimedRobot {
 
   private DoubleSolenoid Arm;
   
-
+  private static final String kDefaultAuto = "Default";
+  private static final String kCustomAuto = "My Auto";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
 
   @Override
@@ -64,28 +69,14 @@ public class Robot extends TimedRobot {
     m_rightStick = new Joystick(0);
 
     
+    m_chooser.setDefaultOption("kAutoNameDefault", kDefaultAuto);
+    m_chooser.addOption("kAutoNameCustom", kCustomAuto);
     
-
-
-    final Command m_simpleAuto; {
-      m_myRobot.tankDrive(-0.5, -0.5);
-    };
-  
-  
-    final Command m_complexAuto; {
-      m_myRobot.tankDrive(-0.5, -0.5);
-    };
-  
-  
-  
+    SmartDashboard.putData("Auto choices", m_chooser);
     
-    m_chooser.setDefaultOption("Simple Auto", m_simpleAuto);
-    m_chooser.addOption("Complex Auto", m_complexAuto);
-   
-   
-  
-    SmartDashboard.putData(m_chooser);
+ 
 
+  
 
      //These are the left joystick buttons
       Lbutton1 = new JoystickButton(m_leftStick, 0);
@@ -117,10 +108,12 @@ because it resets the timer to 0 and then starts the timer at the begining of th
 so our robot knows to only drive for 2 seconds */
 @Override
 public void autonomousInit() {
+    
+  m_autoSelected = m_chooser.getSelected();
 
+  System.out.println("Auto selected: " + m_autoSelected);
 
-
-
+  
   m_timer.reset();
   m_timer.start();
 }
@@ -129,29 +122,36 @@ public void autonomousInit() {
 @Override
 public void autonomousPeriodic() {
   
-  
+  switch (m_autoSelected) {
+    case kCustomAuto:
+      // Drive for 2 seconds
+      if (m_timer.get() < 2)
+      {
+        m_myRobot.tankDrive(-0.5, -0.5);
+      }
+      
+      else if (m_timer.get() < 3.25)
+      {
+        m_myRobot.tankDrive(0.7, -0.7);
+      }
+      else if(m_timer.get() < 5)
+      {
+        m_myRobot.tankDrive(-0.5, -0.5);
+      }
+      else {
+        m_myRobot.stopMotor(); // stops the robot
+      }  
+      break;
+    case kDefaultAuto:
+    default:
+      // Put default auto code here
+      break;
+  }
 
 
-
   
   
-  // Drive for 2 seconds
-  if (m_timer.get() < 2)
-  {
-    m_myRobot.tankDrive(-0.5, -0.5);
-  }
   
-  else if (m_timer.get() < 3.25)
-  {
-    m_myRobot.tankDrive(0.7, -0.7);
-  }
-  else if(m_timer.get() < 5)
-  {
-    m_myRobot.tankDrive(-0.5, -0.5);
-  }
-  else {
-    m_myRobot.stopMotor(); // stops the robot
-  }  
 }
 
   //This is the teleoperated mode that you select from the RoboRio control panel (I forgot what is was called)
