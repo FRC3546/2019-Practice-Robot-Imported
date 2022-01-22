@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 // THIS IS THE CONTROLLER IMPORT (It is important and took us a while to find)
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
-
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SPI;
@@ -59,10 +59,14 @@ public class Robot extends TimedRobot {
   
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
+  private static final String kGyro = "Gyro";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   AHRS gyro = new AHRS(SPI.Port.kMXP);
+
+  final double kP = 1;
+
 
   @Override
   public void robotInit() {
@@ -77,6 +81,7 @@ public class Robot extends TimedRobot {
     
     m_chooser.setDefaultOption("kAutoNameDefault", kDefaultAuto);
     m_chooser.addOption("kAutoNameCustom", kCustomAuto);
+    m_chooser.addOption("Gyro", kGyro);
     
     SmartDashboard.putData("Auto choices", m_chooser);
     
@@ -116,6 +121,7 @@ so our robot knows to only drive for 2 seconds */
 @Override
 public void autonomousInit() {
     
+
   m_autoSelected = m_chooser.getSelected();
 
   System.out.println("Auto selected: " + m_autoSelected);
@@ -128,6 +134,8 @@ public void autonomousInit() {
   /** This function is called periodically during autonomous. */
 @Override
 public void autonomousPeriodic() {
+
+
   
   switch (m_autoSelected) {
     case kCustomAuto:
@@ -152,6 +160,14 @@ public void autonomousPeriodic() {
     case kDefaultAuto:
     default:
       // Put default auto code here
+      break;
+    case kGyro:
+    
+      double error = 45 - gyro.getAngle();
+
+      m_myRobot.tankDrive(-(kP * error), (kP * error));
+      
+
       break;
   }
 
