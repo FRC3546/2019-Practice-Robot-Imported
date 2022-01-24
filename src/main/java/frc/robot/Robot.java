@@ -4,26 +4,42 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
-//import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.TimedRobot;
+
+// Imports tankdrive libraries
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
+// Timer import
+import edu.wpi.first.wpilibj.Timer;
+
 // THIS IS THE CONTROLLER IMPORT (It is important and took us a while to find)
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
+// Joystick support for the joysticks (duh)
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
+
+// Nav x Gyro import
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj.Timer;
+// Camera server import
+import edu.wpi.first.cameraserver.CameraServer;
+
+// Double Solenoid import
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+// Pneumatics import
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
+// Smartdashboard imports
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+// Shuffleboard import
+import edu.wpi.first.wpilibj.shuffleboard.*;
 
  /* This is a demo program showing the use of the RobotDrive class, specifically it contains the code
   necessary to operate a robot with tank drive. */
@@ -41,64 +57,71 @@ public class Robot extends TimedRobot {
   private JoystickButton Lbutton7;
   private JoystickButton Lbutton8;*/
   
-  
+  // Variables for Solenoid toggling
   boolean toggleOnSolenoid = false;
   boolean toggleHeldSolenoid = false;
 
   boolean isInverted = false; //From starting posistion
 
+  // Here we define m_left and m_left for our motor controllers
   private VictorSP m_left = new VictorSP(6);
   private VictorSP m_right = new VictorSP(2);
 
+  // Variable for the timer class
   private final Timer m_timer = new Timer();
 
   private DoubleSolenoid Arm;
   
-
-
-
-
+  // This code sets up stuff for the autonomous selector
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
+  private static final String kGyro = "Gyro";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  // This code is for the gyro idk what it does
+  AHRS gyro = new AHRS(SPI.Port.kMXP);
+  final double kP = 1;
 
 
   @Override
   public void robotInit() {
-    //DifferentialDrive is another word for tank drive and is used on the 2019 robot
+    
+    // DifferentialDrive is another word for tank drive and is used on the 2019 robot
     m_myRobot = new DifferentialDrive(m_left, m_right);
     
-    /* Joysticks we use are numbered and need to be coordinated need to be defined as the left or right
-    joystick to ensure that we are not driving the wrong way*/
+    // Here we pair the motor controllers with the joysticks
     m_leftStick = new Joystick(1);
     m_rightStick = new Joystick(0);
 
-    
+    // These are the different autonomous programs that can be selected in the Shuffleboard or Smart dashboard
     m_chooser.setDefaultOption("kAutoNameDefault", kDefaultAuto);
     m_chooser.addOption("kAutoNameCustom", kCustomAuto);
+    m_chooser.addOption("Gyro", kGyro);
     
+    // Adds the autonomous programs into one of the dashboards
     SmartDashboard.putData("Auto choices", m_chooser);
     
- 
+    // Adds gyro to the Shuffleboard
+    Shuffleboard.getTab("Example tab").add(gyro);
 
-  
 
-     //These are the left joystick buttons
-     /* Lbutton1 = new JoystickButton(m_leftStick, 0);
-      Lbutton2 = new JoystickButton(m_leftStick, 2);
-      Lbutton3 = new JoystickButton(m_leftStick, 3);
-      Lbutton4 = new JoystickButton(m_leftStick, 4);
-      Lbutton5 = new JoystickButton(m_leftStick, 5);
-      Lbutton6 = new JoystickButton(m_leftStick, 6);
-      Lbutton7 = new JoystickButton(m_leftStick, 7);
-      Lbutton8 = new JoystickButton(m_leftStick, 8);*/
+     // These are the left joystick buttons
+      // Lbutton1 = new JoystickButton(m_leftStick, 0);
+      // Lbutton2 = new JoystickButton(m_leftStick, 2);
+      // Lbutton3 = new JoystickButton(m_leftStick, 3);
+      // Lbutton4 = new JoystickButton(m_leftStick, 4);
+      // Lbutton5 = new JoystickButton(m_leftStick, 5);
+      // Lbutton6 = new JoystickButton(m_leftStick, 6);
+      // Lbutton7 = new JoystickButton(m_leftStick, 7);
+      // Lbutton8 = new JoystickButton(m_leftStick, 8);
     
-    /*This tells the robot that all inputs are inverted which tells makes our robot drive forwards
-    and not backwards*/
+    
+    // Inverts the controls for Teleop  
     m_left.setInverted(true);
     m_right.setInverted(true);
 
+    // Double Solenoid being defined as "Arm"
     Arm = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
 
     // Initialize Camera Server
@@ -115,11 +138,12 @@ so our robot knows to only drive for 2 seconds */
 @Override
 public void autonomousInit() {
     
+
   m_autoSelected = m_chooser.getSelected();
 
   System.out.println("Auto selected: " + m_autoSelected);
 
-  
+  // Resets our timer to 0 then starts the timer
   m_timer.reset();
   m_timer.start();
 }
@@ -127,19 +151,24 @@ public void autonomousInit() {
   /** This function is called periodically during autonomous. */
 @Override
 public void autonomousPeriodic() {
-  
+
+
+  // This is our custom code to drive forward, do a 180 and finally, drive back
   switch (m_autoSelected) {
     case kCustomAuto:
-      // Drive for 2 seconds
+      // Drive forward for 2 seconds
       if (m_timer.get() < 2)
       {
         m_myRobot.tankDrive(-0.5, -0.5);
       }
       
+      // Should do a 180 degree turn but depends on multiple variables (Basically this code is old)
       else if (m_timer.get() < 3.25)
       {
         m_myRobot.tankDrive(0.7, -0.7);
       }
+      
+      // Drives back to the starting position (if the turn works)
       else if(m_timer.get() < 5)
       {
         m_myRobot.tankDrive(-0.5, -0.5);
@@ -148,9 +177,26 @@ public void autonomousPeriodic() {
         m_myRobot.stopMotor(); // stops the robot
       }  
       break;
+    
+    // This is the default autonomous
     case kDefaultAuto:
     default:
-      // Put default auto code here
+     
+      // This is currently intended to do nothing
+    
+      break;
+    
+    // This is the gyro autonomous 
+    case kGyro:
+      
+      // Sets the angle we want to move to
+      double error = 45 - gyro.getAngle();
+      
+      // Turns to the targeted angle (the kp value may need to be adjusted depending on the targeted
+      // gyro angle
+      m_myRobot.tankDrive(-(kP * error), (kP * error));
+      
+
       break;
   }
 
@@ -158,20 +204,10 @@ public void autonomousPeriodic() {
   }
 
   
-  public void updateToggle()
-  {
-      if(m_leftStick.getRawButton(1)){
-          if(!toggleHeldSolenoid){
-              toggleOnSolenoid = !toggleOnSolenoid;
-              toggleHeldSolenoid = true;
-          }
-      }else{
-          toggleHeldSolenoid = false;
-          toggleOnSolenoid = false;}
-      }
+
   
 
-
+// This inverts the teleop controls with the press of a button
 public void updateInversionValue()
   {
     if(m_leftStick.getRawButton(3))
@@ -185,8 +221,18 @@ public void updateInversionValue()
   }
 
 
-
-
+  // Toggles the values of the solenoids when the joystick trigger is held in
+  public void updateToggle()
+  {
+      if(m_leftStick.getRawButton(1)){
+          if(!toggleHeldSolenoid){
+              toggleOnSolenoid = !toggleOnSolenoid;
+              toggleHeldSolenoid = true;
+          }
+      }else{
+          toggleHeldSolenoid = false;
+          toggleOnSolenoid = false;}
+      }
 
 
 
@@ -215,7 +261,7 @@ public void updateInversionValue()
     // }
 
 
-    
+    // Important for the toggle you will see in a bit
     updateToggle();
 
     if (toggleOnSolenoid){
@@ -224,17 +270,12 @@ public void updateInversionValue()
       Arm.set(kReverse);
     }
 
+    // Resets the gyro with the press of a button
     if (m_rightStick.getRawButton(3))
     {
       gyro.zeroYaw();
     }
-
-
-
-
-
     }
-
 
 
 /*  
@@ -272,4 +313,4 @@ public void updateInversionValue()
   }
 
   
-//}
+}
