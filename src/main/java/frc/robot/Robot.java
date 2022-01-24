@@ -67,18 +67,19 @@ public class Robot extends TimedRobot {
   private VictorSP m_left = new VictorSP(6);
   private VictorSP m_right = new VictorSP(2);
 
+  // Variable for the timer class
   private final Timer m_timer = new Timer();
 
   private DoubleSolenoid Arm;
   
-
+  // This code sets up stuff for the autonomous selector
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private static final String kGyro = "Gyro";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-
+  // This code is for the gyro idk what it does
   AHRS gyro = new AHRS(SPI.Port.kMXP);
   final double kP = 1;
 
@@ -152,7 +153,7 @@ public void autonomousInit() {
 public void autonomousPeriodic() {
 
 
-  
+  // This is our custom code to drive forward, do a 180 and finally, drive back
   switch (m_autoSelected) {
     case kCustomAuto:
       // Drive forward for 2 seconds
@@ -307,4 +308,4 @@ public void updateInversionValue()
   }
 
   
-}//}
+}
