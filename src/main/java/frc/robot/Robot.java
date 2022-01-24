@@ -6,8 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
+// Imports tankdrive libraries
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 // Timer import
 import edu.wpi.first.wpilibj.Timer;
@@ -141,7 +142,7 @@ public void autonomousInit() {
 
   System.out.println("Auto selected: " + m_autoSelected);
 
-  
+  // Resets our timer to 0 then starts the timer
   m_timer.reset();
   m_timer.start();
 }
@@ -244,7 +245,7 @@ public void updateInversionValue()
     // }
 
 
-    
+    // Important for the toggle you will see in a bit
     updateToggle();
 
     if (toggleOnSolenoid){
@@ -258,10 +259,9 @@ public void updateInversionValue()
     {
       gyro.zeroYaw();
     }
-
-
     }
 
+  // Toggles the values of the solenoids when the joystick trigger is held in
   public void updateToggle()
   {
       if(m_leftStick.getRawButton(1)){
