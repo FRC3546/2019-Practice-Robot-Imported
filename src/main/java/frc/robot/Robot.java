@@ -10,8 +10,11 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 // THIS IS THE CONTROLLER IMPORT (It is important and took us a while to find)
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.Timer;
 import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
@@ -29,10 +32,10 @@ public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
   private Joystick m_leftStick;
   private Joystick m_rightStick;
-  private JoystickButton Lbutton1;
+  /*private JoystickButton Lbutton1;
   private JoystickButton Lbutton2;
   private JoystickButton Lbutton3;
-  /*private JoystickButton Lbutton4;
+  private JoystickButton Lbutton4;
   private JoystickButton Lbutton5;
   private JoystickButton Lbutton6;
   private JoystickButton Lbutton7;
@@ -51,6 +54,10 @@ public class Robot extends TimedRobot {
 
   private DoubleSolenoid Arm;
   
+
+
+
+
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
@@ -78,10 +85,10 @@ public class Robot extends TimedRobot {
   
 
      //These are the left joystick buttons
-      Lbutton1 = new JoystickButton(m_leftStick, 0);
+     /* Lbutton1 = new JoystickButton(m_leftStick, 0);
       Lbutton2 = new JoystickButton(m_leftStick, 2);
       Lbutton3 = new JoystickButton(m_leftStick, 3);
-      /*Lbutton4 = new JoystickButton(m_leftStick, 4);
+      Lbutton4 = new JoystickButton(m_leftStick, 4);
       Lbutton5 = new JoystickButton(m_leftStick, 5);
       Lbutton6 = new JoystickButton(m_leftStick, 6);
       Lbutton7 = new JoystickButton(m_leftStick, 7);
@@ -151,7 +158,17 @@ public void autonomousPeriodic() {
   }
 
   
-  
+  public void updateToggle()
+  {
+      if(m_leftStick.getRawButton(1)){
+          if(!toggleHeldSolenoid){
+              toggleOnSolenoid = !toggleOnSolenoid;
+              toggleHeldSolenoid = true;
+          }
+      }else{
+          toggleHeldSolenoid = false;
+          toggleOnSolenoid = false;}
+      }
   
 
 
@@ -168,7 +185,12 @@ public void updateInversionValue()
   }
 
 
-  //This is the teleoperated mode that you select from the RoboRio control panel (I forgot what is was called)
+
+
+
+
+
+  //This is the teleoperated mode that you select from the Driver Station
   @Override
   public void teleopPeriodic() {
     
@@ -201,18 +223,20 @@ public void updateInversionValue()
     }else{
       Arm.set(kReverse);
     }
+
+    if (m_rightStick.getRawButton(3))
+    {
+      gyro.zeroYaw();
     }
 
-  public void updateToggle()
-  {
-      if(m_leftStick.getRawButton(1)){
-          if(!toggleHeldSolenoid){
-              toggleOnSolenoid = !toggleOnSolenoid;
-              toggleHeldSolenoid = true;
-          }
-      }else{
-          toggleHeldSolenoid = false;
-          toggleOnSolenoid = false;}
+
+
+
+
+    }
+
+
+
 /*  
     
   if(toggleOn){
@@ -248,4 +272,4 @@ public void updateInversionValue()
   }
 
   
-}//}
+//}
