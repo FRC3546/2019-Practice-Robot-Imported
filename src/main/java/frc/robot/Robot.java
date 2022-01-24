@@ -4,20 +4,23 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
+
+// Timer import
 import edu.wpi.first.wpilibj.Timer;
-
-
 
 // THIS IS THE CONTROLLER IMPORT (It is important and took us a while to find)
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
+// Joystick support for the joysticks (duh)
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
+
 // Nav x Gyro import
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.kauailabs.navx.frc.AHRS;
 
 // Camera server import
@@ -53,7 +56,7 @@ public class Robot extends TimedRobot {
   private JoystickButton Lbutton7;
   private JoystickButton Lbutton8;*/
   
-  
+  // Variables for Solenoid toggling
   boolean toggleOnSolenoid = false;
   boolean toggleHeldSolenoid = false;
 
@@ -67,14 +70,15 @@ public class Robot extends TimedRobot {
 
   private DoubleSolenoid Arm;
   
+
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private static final String kGyro = "Gyro";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  AHRS gyro = new AHRS(SPI.Port.kMXP);
 
+  AHRS gyro = new AHRS(SPI.Port.kMXP);
   final double kP = 1;
 
 
