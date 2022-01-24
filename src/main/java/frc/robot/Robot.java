@@ -150,16 +150,19 @@ public void autonomousPeriodic() {
   
   switch (m_autoSelected) {
     case kCustomAuto:
-      // Drive for 2 seconds
+      // Drive forward for 2 seconds
       if (m_timer.get() < 2)
       {
         m_myRobot.tankDrive(-0.5, -0.5);
       }
       
+      // Should do a 180 degree turn but depends on multiple variables (Basically this code is old)
       else if (m_timer.get() < 3.25)
       {
         m_myRobot.tankDrive(0.7, -0.7);
       }
+      
+      // Drives back to the starting position (if the turn works)
       else if(m_timer.get() < 5)
       {
         m_myRobot.tankDrive(-0.5, -0.5);
@@ -172,14 +175,19 @@ public void autonomousPeriodic() {
     // This is the default autonomous
     case kDefaultAuto:
     default:
+     
       // This is currently intended to do nothing
+    
       break;
     
-      // This is the gyro autonomous 
-      case kGyro:
-    
+    // This is the gyro autonomous 
+    case kGyro:
+      
+      // Sets the angle we want to move to
       double error = 45 - gyro.getAngle();
-
+      
+      // Turns to the targeted angle (the kp value may need to be adjusted depending on the targeted
+      // gyro angle
       m_myRobot.tankDrive(-(kP * error), (kP * error));
       
 
