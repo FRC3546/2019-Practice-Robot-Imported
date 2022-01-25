@@ -4,9 +4,10 @@
 
 package frc.robot;
 
+// This imports a SPI bus port
 import edu.wpi.first.wpilibj.SPI;
 
-// Formerly known as iter
+// Formerly known as iterative, this is the type of drive for the robot
 import edu.wpi.first.wpilibj.TimedRobot;
 
 // Imports tankdrive libraries
@@ -21,7 +22,6 @@ import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 // Joystick support for the joysticks (duh)
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
 
 // Nav x Gyro import
 import com.kauailabs.navx.frc.AHRS;
@@ -132,9 +132,6 @@ public class Robot extends TimedRobot {
   }
 
 
-
-
-
 /* This function is run once each time the robot enters autonomous mode. This function is also imporant
 because it resets the timer to 0 and then starts the timer at the begining of the autonomous period
 so our robot knows to only drive for 2 seconds */
@@ -154,7 +151,6 @@ public void autonomousInit() {
   /** This function is called periodically during autonomous. */
 @Override
 public void autonomousPeriodic() {
-
 
   // This is our custom code to drive forward, do a 180 and finally, drive back
   switch (m_autoSelected) {
@@ -201,14 +197,8 @@ public void autonomousPeriodic() {
       
 
       break;
+    }
   }
-
-  
-  }
-
-  
-
-  
 
 // This inverts the teleop controls with the press of a button
 public void updateInversionValue()
@@ -243,6 +233,7 @@ public void updateInversionValue()
   @Override
   public void teleopPeriodic() {
     
+    // Updates the inversion (checks for whether the robot controls are inverted or not)
     updateInversionValue();
 
 
@@ -255,6 +246,8 @@ public void updateInversionValue()
     }
     else
     {
+      
+      // 
       if (!isInverted)
       {
         m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
