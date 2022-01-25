@@ -79,8 +79,9 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  // This code is for the gyro idk what it does
+  // This code creates a new gyro object of the AHRS class
   AHRS gyro = new AHRS(SPI.Port.kMXP);
+
   final double kP = 1;
 
 
@@ -243,14 +244,24 @@ public void updateInversionValue()
     updateInversionValue();
 
 
-    if (!isInverted)
+    if(m_rightStick.getRawButton(2))
     {
-      m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+      double magnitude = (m_leftStick.getY() + m_rightStick.getY()) / 2;
+      double leftStickValue = magnitude;
+      double rightStickValue = magnitude;
+      m_myRobot.tankDrive(leftStickValue,  rightStickValue);
     }
-    else{
-      m_myRobot.tankDrive((-1) * m_rightStick.getY(), (-1) * m_leftStick.getY());
+    else
+    {
+      if (!isInverted)
+      {
+        m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+      }
+      else
+      {
+        m_myRobot.tankDrive((-1) * m_rightStick.getY(), (-1) * m_leftStick.getY());
+      }
     }
-
 
     // m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
     
@@ -313,4 +324,4 @@ public void updateInversionValue()
   }
 
   
-}
+
