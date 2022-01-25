@@ -50,10 +50,10 @@ public class Robot extends TimedRobot {
   private DifferentialDrive m_myRobot;
   private Joystick m_leftStick;
   private Joystick m_rightStick;
-  private JoystickButton Lbutton1;
+  /*private JoystickButton Lbutton1;
   private JoystickButton Lbutton2;
   private JoystickButton Lbutton3;
-  /*private JoystickButton Lbutton4;
+  private JoystickButton Lbutton4;
   private JoystickButton Lbutton5;
   private JoystickButton Lbutton6;
   private JoystickButton Lbutton7;
@@ -81,8 +81,9 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  // This code is for the gyro idk what it does
+  // This code creates a new gyro object of the AHRS class
   AHRS gyro = new AHRS(SPI.Port.kMXP);
+
   final double kP = 1;
 
 
@@ -109,9 +110,9 @@ public class Robot extends TimedRobot {
 
 
      // These are the left joystick buttons
-      Lbutton1 = new JoystickButton(m_leftStick, 0);
-      Lbutton2 = new JoystickButton(m_leftStick, 2);
-      Lbutton3 = new JoystickButton(m_leftStick, 3);
+      // Lbutton1 = new JoystickButton(m_leftStick, 0);
+      // Lbutton2 = new JoystickButton(m_leftStick, 2);
+      // Lbutton3 = new JoystickButton(m_leftStick, 3);
       // Lbutton4 = new JoystickButton(m_leftStick, 4);
       // Lbutton5 = new JoystickButton(m_leftStick, 5);
       // Lbutton6 = new JoystickButton(m_leftStick, 6);
@@ -206,7 +207,7 @@ public void autonomousPeriodic() {
   }
 
   
-  
+
   
 
 // This inverts the teleop controls with the press of a button
@@ -223,21 +224,46 @@ public void updateInversionValue()
   }
 
 
-  //This is the teleoperated mode that you select from the RoboRio control panel (I forgot what is was called)
+  // Toggles the values of the solenoids when the joystick trigger is held in
+  public void updateToggle()
+  {
+      if(m_leftStick.getRawButton(1)){
+          if(!toggleHeldSolenoid){
+              toggleOnSolenoid = !toggleOnSolenoid;
+              toggleHeldSolenoid = true;
+          }
+      }else{
+          toggleHeldSolenoid = false;
+          toggleOnSolenoid = false;}
+      }
+
+
+
+  //This is the teleoperated mode that you select from the Driver Station
   @Override
   public void teleopPeriodic() {
     
     updateInversionValue();
 
 
-    if (!isInverted)
+    if(m_rightStick.getRawButton(2))
     {
-      m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+      double magnitude = (m_leftStick.getY() + m_rightStick.getY()) / 2;
+      double leftStickValue = magnitude;
+      double rightStickValue = magnitude;
+      m_myRobot.tankDrive(leftStickValue,  rightStickValue);
     }
-    else{
-      m_myRobot.tankDrive((-1) * m_rightStick.getY(), (-1) * m_leftStick.getY());
+    else
+    {
+      if (!isInverted)
+      {
+        m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
+      }
+      else
+      {
+        m_myRobot.tankDrive((-1) * m_rightStick.getY(), (-1) * m_leftStick.getY());
+      }
     }
-
 
     // m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
     
@@ -264,17 +290,7 @@ public void updateInversionValue()
     }
     }
 
-  // Toggles the values of the solenoids when the joystick trigger is held in
-  public void updateToggle()
-  {
-      if(m_leftStick.getRawButton(1)){
-          if(!toggleHeldSolenoid){
-              toggleOnSolenoid = !toggleOnSolenoid;
-              toggleHeldSolenoid = true;
-          }
-      }else{
-          toggleHeldSolenoid = false;
-          toggleOnSolenoid = false;}
+
 /*  
     
   if(toggleOn){
@@ -310,4 +326,4 @@ public void updateInversionValue()
   }
 
   
-}
+
