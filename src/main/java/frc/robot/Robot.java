@@ -18,13 +18,18 @@ import edu.wpi.first.wpilibj.Timer;
 
 // THIS IS THE CONTROLLER IMPORT (It is important and took us a while to find)
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxRelativeEncoder;
 
-// Joystick support for the joysticks (duh)
+// Joystick support for the joysticks
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 // Nav x Gyro import
 import com.kauailabs.navx.frc.AHRS;
+
 
 // Camera server import
 import edu.wpi.first.cameraserver.CameraServer;
@@ -68,6 +73,9 @@ public class Robot extends TimedRobot {
   // Here we define m_left and m_left for our motor controllers
   private VictorSP m_left = new VictorSP(6);
   private VictorSP m_right = new VictorSP(2);
+  private CANSparkMax m_Neo = new CANSparkMax(24, MotorType.kBrushless);
+
+  private RelativeEncoder m_encoder;
 
   // Variable for the timer class
   private final Timer m_timer = new Timer();
@@ -129,6 +137,10 @@ public class Robot extends TimedRobot {
 
     // Initialize Camera Server
     CameraServer.startAutomaticCapture();
+
+    // Initialize encoder
+    m_encoder = m_motor.getEncoder(SparkMaxRelativeEncoder.Type.kQuadrature,)
+    .getencoder()
   }
 
 
@@ -234,7 +246,7 @@ public void updateInversionValue()
   public void teleopPeriodic() {
     
     // Updates the inversion (checks for whether the robot controls are inverted or not)
-    updateInversionValue();
+
 
 
     if(m_rightStick.getRawButton(2))
@@ -246,8 +258,8 @@ public void updateInversionValue()
     }
     else
     {
+      updateInversionValue();
       
-      // 
       if (!isInverted)
       {
         m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
@@ -257,6 +269,8 @@ public void updateInversionValue()
         m_myRobot.tankDrive((-1) * m_rightStick.getY(), (-1) * m_leftStick.getY());
       }
     }
+    
+    m_Neo.set(m_rightStick.getZ());
 
     // m_myRobot.tankDrive(m_leftStick.getY(), m_rightStick.getY());
     
