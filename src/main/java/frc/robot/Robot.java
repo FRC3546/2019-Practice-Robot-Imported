@@ -106,8 +106,8 @@ public class Robot extends TimedRobot {
     m_rightStick = new Joystick(0);
 
     // These are the different autonomous programs that can be selected in the Shuffleboard or Smart dashboard
-    m_chooser.setDefaultOption("kAutoNameDefault", kDefaultAuto);
-    m_chooser.addOption("kAutoNameCustom", kCustomAuto);
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("Custom Auto", kCustomAuto);
     m_chooser.addOption("Gyro", kGyro);
     
     // Adds the autonomous programs into one of the dashboards
@@ -140,7 +140,7 @@ public class Robot extends TimedRobot {
 
     // Initialize encoder
     m_encoder = m_motor.getEncoder(SparkMaxRelativeEncoder.Type.kQuadrature,)
-    .getencoder()
+
   }
 
 
@@ -259,6 +259,7 @@ public void updateInversionValue()
     else
     {
       updateInversionValue();
+      
       
       if (!isInverted)
       {
